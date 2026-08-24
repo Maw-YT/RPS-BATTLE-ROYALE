@@ -1,5 +1,5 @@
 local M = {
-    vsync = false,
+    vsync = true,
     fullscreen = true,
     showFps = true,
     showHud = true,
@@ -117,10 +117,12 @@ end
 
 function M.load()
     if not love.filesystem.getInfo(SAVE_FILE) then
+        M.save()
         return
     end
     local contents = love.filesystem.read(SAVE_FILE)
     if not contents then
+        M.save()
         return
     end
     for line in contents:gmatch("[^\r\n]+") do
@@ -142,7 +144,10 @@ function M.save()
         local key = KEYS[i]
         lines[#lines + 1] = key .. "=" .. tostring(M[key])
     end
-    love.filesystem.write(SAVE_FILE, table.concat(lines, "\n"))
+    local ok, err = love.filesystem.write(SAVE_FILE, table.concat(lines, "\n") .. "\n")
+    if not ok then
+        print("Failed to save settings: " .. tostring(err))
+    end
 end
 
 function M.applyDisplay()

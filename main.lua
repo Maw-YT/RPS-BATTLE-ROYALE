@@ -26,6 +26,7 @@ local function handleMenuAction(action)
     elseif action == "quit" then
         love.event.quit()
     elseif action == "back" then
+        settings.save()
         gameState.scene = "main_menu"
         menuSystem.selected = 1
         menuSystem.hover = nil
@@ -105,6 +106,10 @@ function love.mousereleased(x, y, button)
     if gameState.scene == "settings_menu" then
         handleMenuAction(menuSystem:mousereleased(gameState.scene))
     end
+end
+
+function love.quit()
+    settings.save()
 end
 
 function love.wheelmoved(x, y)

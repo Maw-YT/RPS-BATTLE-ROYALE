@@ -194,7 +194,7 @@ function M:mousepressed(x, y)
         if row.kind == "slider" and row.sliderHit and pointInRect(x, y, row.sliderHit) then
             self.drag = {key = row.id, bar = row.bar, option = row.option}
             self.selected = row.index
-            applySliderFromMouse(row, x, false)
+            applySliderFromMouse(row, x, true)
             return "settings_changed"
         elseif row.kind == "toggle" and pointInRect(x, y, row) then
             self.selected = row.index
@@ -214,11 +214,11 @@ function M:mousemoved(x, y)
     for _, row in ipairs(layout.rows) do
         if row.id == self.drag.key and row.bar then
             self.drag.bar = row.bar
-            applySliderFromMouse(row, x, false)
+            applySliderFromMouse(row, x, true)
             return
         end
     end
-    applySliderFromMouse({id = self.drag.key, bar = self.drag.bar}, x, false)
+    applySliderFromMouse({id = self.drag.key, bar = self.drag.bar}, x, true)
 end
 
 function M:mousereleased()
@@ -272,24 +272,10 @@ function M:keypressed(key)
         if self.selected > #options then
             self.selected = 1
         end
-    elseif key == "left" or key == "a" then
+    elseif key == "return" or key == "space" then
         local option = options[self.selected]
-        if option then
-            if option.type == "slider" then
-                settings.nudge(option.key, -1)
-            else
-                settings.toggle(option.key)
-            end
-            return "settings_changed"
-        end
-    elseif key == "right" or key == "d" or key == "return" or key == "space" then
-        local option = options[self.selected]
-        if option then
-            if option.type == "slider" then
-                settings.nudge(option.key, 1)
-            else
-                settings.toggle(option.key)
-            end
+        if option and option.type == "toggle" then
+            settings.toggle(option.key)
             return "settings_changed"
         end
     end
